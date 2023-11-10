@@ -11,8 +11,10 @@ const app = express();
 const server = http.createServer(app);
 
 //? Start the server
-
 const PORT = process.env.PORT || 9080;
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 app.use("/", userRouter);
 
