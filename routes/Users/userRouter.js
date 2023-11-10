@@ -4,11 +4,12 @@ import {
   login,
   regsiter,
 } from "../../controllers/users/usersCtrl.js";
+import isLoggedin from "../../middlewares/isLoggedin.js";
 const userRouter = express.Router();
 
 userRouter.post("/register", regsiter);
 userRouter.post("/login", login);
 
-userRouter.get("/profile/:id", getProfile);
+userRouter.get("/profile/:id", isLoggedin, getProfile);
 
 export default userRouter;
