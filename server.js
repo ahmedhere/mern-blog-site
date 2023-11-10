@@ -3,6 +3,10 @@ import express from "express";
 import userRouter from "./routes/Users/userRouter.js";
 import dotenv from "dotenv";
 import connectDB from "./config/database.js";
+import {
+  globalErrorHandler,
+  notFound,
+} from "./middlewares/globalErrorHandler.js";
 dotenv.config();
 connectDB();
 //!Server
@@ -17,6 +21,12 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use("/api/v1/users", userRouter);
+
+//? Not Found Middleware
+app.use(notFound);
+
+//! Error Handler Middleware
+app.use(globalErrorHandler);
 
 server.listen(
   PORT,
