@@ -16,7 +16,7 @@ const PORT = process.env.PORT || 9080;
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use("/", userRouter);
+app.use("/api/v1/users", userRouter);
 
 server.listen(
   PORT,
