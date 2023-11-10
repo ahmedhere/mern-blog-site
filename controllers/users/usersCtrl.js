@@ -74,10 +74,12 @@ export const login = async (req, res) => {
 
 export const getProfile = async (req, res) => {
   try {
+    const { id } = req.params;
+    const user = await User.findById(id).select("-password");
     res.json({
       status: "success",
       message: "Profile fetched",
-      data: "user data",
+      user,
     });
   } catch (err) {
     res.json({

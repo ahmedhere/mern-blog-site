@@ -12,7 +12,6 @@ export default function isloggedin(req, res, next) {
       const user = await User.findById(userId).select(
         "username email role _id"
       );
-      console.log(user);
       req.userAuth = user;
       next();
     }
