@@ -7,6 +7,7 @@ import {
   globalErrorHandler,
   notFound,
 } from "./middlewares/globalErrorHandler.js";
+import categoryRoute from "./routes/category/categoryRouter.js";
 dotenv.config();
 connectDB();
 //!Server
@@ -21,6 +22,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use("/api/v1/users", userRouter);
+app.use("/api/v1/categories", categoryRoute);
 
 //? Not Found Middleware
 app.use(notFound);
