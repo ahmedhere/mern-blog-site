@@ -8,6 +8,7 @@ import {
   notFound,
 } from "./middlewares/globalErrorHandler.js";
 import categoryRoute from "./routes/category/categoryRouter.js";
+import postRouter from "./routes/posts/postRoute.js";
 dotenv.config();
 connectDB();
 //!Server
@@ -23,6 +24,7 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/categories", categoryRoute);
+app.use("/api/v1/posts", postRouter);
 
 //? Not Found Middleware
 app.use(notFound);
