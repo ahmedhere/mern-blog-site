@@ -46,7 +46,7 @@ export const createPost = asyncHandler(async (req, res) => {
 });
 
 export const getPosts = asyncHandler(async (req, res) => {
-  const posts = await Post.find({});
+  const posts = await Post.find({}).populate("comments");
   res.status(200).json({
     status: "success",
     message: "Posts successfully fetched",
@@ -56,7 +56,7 @@ export const getPosts = asyncHandler(async (req, res) => {
 
 export const getPost = asyncHandler(async (req, res) => {
   const { id } = req.params;
-  const post = await Post.findById(id);
+  const post = await Post.findById(id).populate("comments");
   res.status(200).json({
     status: "success",
     message: "Post successfully fetched",
