@@ -5,6 +5,8 @@ import bcrypt from "bcryptjs";
 import User from "../../model/User/User.js";
 import generateToken from "../../utils/generateToken.js";
 import asyncHandler from "express-async-handler";
+import sendEmail from "../../utils/sendEmail.js";
+import crypto from "crypto";
 
 export const regsiter = asyncHandler(async (req, res) => {
   //get the details
@@ -185,5 +187,55 @@ export const unFollowingUser = asyncHandler(async (req, res) => {
   res.json({
     status: "success",
     message: "You unfollowed the user successfully",
+  });
+});
+
+export const forgotPassword = asyncHandler(async (req, res) => {
+  const { email } = req.body;
+  const userFound = await User.findOne({ email });
+  if (!userFound) {
+    throw new Error("There is no email in out system");
+  }
+  //create Token
+  const resetToken = await userFound.generatePasswordResetToken();
+  //resave the user
+
+  await userFound.save();
+  //send Email
+  sendEmail(email, resetToken);
+  res.status(200).json({
+    message: "Password reset sent to your email",
+    status: "success",
+    resetToken,
+  });
+});
+
+export const resetPassword = asyncHandler(async (req, res) => {
+  const { resetToken } = req.params;
+  const { password } = req.body;
+  //Convert the token to actual token that has been saved in the db
+  const cryptoToken = crypto
+    .createHash("sha256")
+    .update(resetToken)
+    .digest("hex");
+  // find the user by the crypto token
+  const userFound = await User.findOne({
+    passwordResetToken: cryptoToken,
+    passwordResetExpires: { $gt: Date.now() },
+  });
+
+  if (!userFound) {
+    throw new Error("Password reset token is invalid or expired");
+  }
+  //Update the user password
+
+  const salt = await bcrypt.genSalt(12);
+  userFound.password = await bcrypt.hash(password, salt);
+  userFound.passwordResetExpires = undefined;
+  userFound.passwordResetToken = undefined;
+  await userFound.save();
+  res.json({
+    message: "Password reset successfully",
+    status: "success",
   });
 });

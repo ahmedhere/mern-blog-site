@@ -2,9 +2,11 @@ import express from "express";
 import {
   FollowingUser,
   blockUser,
+  forgotPassword,
   getProfile,
   login,
   regsiter,
+  resetPassword,
   unFollowingUser,
   unblockUser,
   viewProfile,
@@ -17,7 +19,10 @@ userRouter.post("/login", login);
 
 userRouter.put("/block/:userIdToBlock", isLoggedin, blockUser);
 userRouter.put("/unblock/:userIdToUnBlock", isLoggedin, unblockUser);
-userRouter.put("/follow/:userToFollowId", isLoggedin, FollowingUser);
+userRouter.post("/forgot-password", forgotPassword);
+userRouter.post("/reset-password/:resetToken", resetPassword);
+
+userRouter.put("/unfollow/:userTounFollowId", isLoggedin, unFollowingUser);
 
 userRouter.put("/unfollow/:userTounFollowId", isLoggedin, unFollowingUser);
 

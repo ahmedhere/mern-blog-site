@@ -32,7 +32,8 @@ const sendEmail = async (to, resetToken) => {
     console.log("Email sent", info.messageId);
   } catch (ex) {
     console.log(ex);
-    throw new Error("Email Sending Failed");
+    // For the time being not passing the error
+    // throw new Error("Email Sending Failed");
   }
 };
 

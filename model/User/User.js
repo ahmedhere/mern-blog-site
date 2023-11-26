@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-
+import crypto from "crypto";
 // Schema
 const userSchema = new mongoose.Schema(
   {
@@ -77,6 +77,21 @@ const userSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
+
+//! Gemerate password reset option method
+userSchema.methods.generatePasswordResetToken = function () {
+  //generateToken
+  const resetToken = crypto.randomBytes(20).toString("hex");
+  //assign the token to passwordResetToken
+  this.passwordResetToken = crypto
+    .createHash("sha256")
+    .update(resetToken)
+    .digest("hex");
+
+  //update password reset expires option
+  this.passwordResetExpires = Date.now() + 10 * 60 * 1000;
+  return resetToken;
+};
 
 //compile schema to model
 
