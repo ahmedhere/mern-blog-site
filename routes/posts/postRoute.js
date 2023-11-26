@@ -7,9 +7,10 @@ import {
   updatePost,
 } from "../../controllers/posts/postCtrl.js";
 import isloggedin from "../../middlewares/isLoggedin.js";
+import checkAccountVerification from "../../middlewares/isAccountVerified.js";
 const postRouter = express.Router();
 
-postRouter.post("/", isloggedin, createPost);
+postRouter.post("/", isloggedin, checkAccountVerification, createPost);
 postRouter.get("/", getPosts);
 
 postRouter

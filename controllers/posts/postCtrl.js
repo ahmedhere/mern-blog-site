@@ -10,6 +10,7 @@ export const createPost = asyncHandler(async (req, res) => {
   if (postFound) {
     throw new Error("Post already exists");
   }
+  //check if the user account if verified
   const post = await Post.create({
     title,
     image,
