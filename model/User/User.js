@@ -93,6 +93,20 @@ userSchema.methods.generatePasswordResetToken = function () {
   return resetToken;
 };
 
+userSchema.methods.generateAccountVerificationToken = function () {
+  //generateToken
+  const resetToken = crypto.randomBytes(20).toString("hex");
+  //assign the token to passwordResetToken
+  this.accountVerificationToken = crypto
+    .createHash("sha256")
+    .update(resetToken)
+    .digest("hex");
+
+  //update password reset expires option
+  this.accountVerificationExpires = Date.now() + 10 * 60 * 1000; //~ expies in 10 minutes
+  return resetToken;
+};
+
 //compile schema to model
 
 const User = mongoose.model("User", userSchema);

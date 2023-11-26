@@ -7,6 +7,7 @@ import generateToken from "../../utils/generateToken.js";
 import asyncHandler from "express-async-handler";
 import sendEmail from "../../utils/sendEmail.js";
 import crypto from "crypto";
+import sendAccountVerificationEmail from "../../utils/sendAccountVerification.js";
 
 export const regsiter = asyncHandler(async (req, res) => {
   //get the details
@@ -237,5 +238,60 @@ export const resetPassword = asyncHandler(async (req, res) => {
   res.json({
     message: "Password reset successfully",
     status: "success",
+  });
+});
+
+// @route POST /api/v1/users/account-verification-email
+// @desc send Account verification token over the email
+// @access Private
+
+export const accountVerificationEmail = asyncHandler(async (req, res) => {
+  //Find the login user email
+
+  const user = await User.findById(req?.userAuth?._id);
+  if (!user) {
+    throw new Error("User not found");
+  }
+  //send the token
+  const token = await user.generateAccountVerificationToken();
+  console.log(token);
+  await user.save();
+  // send email
+
+  sendAccountVerificationEmail(user?.email, token);
+  res.status(200).json({
+    message: `Account verification email sent ${user?.email}`,
+  });
+});
+
+// @route POST /api/v1/users/verify-account/:accountverificationId
+// @desc verify the account by checking the sent password
+// @access Private
+
+export const verifyAccount = asyncHandler(async (req, res) => {
+  const { accountverificationId } = req.params;
+
+  const cryptoToken = crypto
+    .createHash("sha256")
+    .update(accountverificationId)
+    .digest("hex");
+
+  const userFound = await User.findOne({
+    accountVerificationToken: cryptoToken,
+    accountVerificationExpires: { $gt: Date.now() },
+  });
+
+  if (!userFound) {
+    throw new Error("Account verification token is invalid or expired");
+  }
+  userFound.isVerified = true;
+  userFound.accountVerificationExpires = undefined;
+  userFound.accountVerificationToken = undefined;
+
+  await userFound.save();
+
+  res.status(200).json({
+    status: "success",
+    message: "Account successfully verified",
   });
 });
