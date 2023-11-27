@@ -160,3 +160,23 @@ export const dislikePost = asyncHandler(async (req, res) => {
   await post.save();
   res.status(200).json({ message: "Post disliked successfully" });
 });
+
+// @desc clapping a post
+export const claps = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const post = await Post.findById(id);
+  if (!post) {
+    throw new Error("Post not found");
+  }
+  // implement the claps
+  const updated = await Post.findByIdAndUpdate(
+    id,
+    {
+      $inc: { claps: 1 },
+    },
+    {
+      new: true,
+    }
+  );
+  res.json({ message: "Post clap successfully", post: updated });
+});

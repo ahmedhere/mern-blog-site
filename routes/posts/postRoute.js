@@ -1,5 +1,6 @@
 import express from "express";
 import {
+  claps,
   createPost,
   deletePost,
   dislikePost,
@@ -17,6 +18,7 @@ postRouter.get("/", getPosts);
 
 postRouter.put("/likes/:id", isloggedin, likePost);
 postRouter.put("/dislikes/:id", isloggedin, dislikePost);
+postRouter.put("/claps/:id", isloggedin, claps);
 
 postRouter
   .route("/:id")
