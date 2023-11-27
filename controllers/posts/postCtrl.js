@@ -92,3 +92,71 @@ export const updatePost = asyncHandler(async (req, res) => {
     post,
   });
 });
+
+// @desc Liking a post
+// @route Put /api/v1/posts/likes/:id
+// @access private
+
+export const likePost = asyncHandler(async (req, res) => {
+  //get Id of the post
+  const { id } = req.params;
+  // get the logged in user
+  const UserId = req?.userAuth?._id;
+  const post = await Post.findById(id);
+  if (!post) {
+    throw new Error("Post not found");
+  }
+  // check if the user already liked the post
+  const userHasLiked = post.likes.some((like) => like.toString() === UserId);
+  if (userHasLiked) {
+    throw new Error("User has already liked this post");
+  }
+  // Push the user into the post likes
+  await Post.findByIdAndUpdate(
+    id,
+    {
+      $addToSet: { likes: UserId },
+    },
+    {
+      new: true,
+    }
+  );
+  // remove the user from the dislikes array if present
+  post.dislikes = post.dislikes.filter(
+    (dislike) => dislike.toString() !== UserId.toString()
+  );
+  await post.save();
+  res.status(200).json({ message: "Post liked successfully" });
+});
+
+export const dislikePost = asyncHandler(async (req, res) => {
+  //get Id of the post
+  const { id } = req.params;
+  // get the logged in user
+  const UserId = req?.userAuth?._id;
+  const post = await Post.findById(id);
+  if (!post) {
+    throw new Error("Post not found");
+  }
+  // check if the user already disliked the post
+  const userHasLiked = post.dislikes.some((like) => like.toString() === UserId);
+  if (userHasLiked) {
+    throw new Error("User has already liked this post");
+  }
+  // Push the user into the post likes
+  await Post.findByIdAndUpdate(
+    id,
+    {
+      $addToSet: { dislikes: UserId },
+    },
+    {
+      new: true,
+    }
+  );
+  // remove the user from the dislikes array if present
+  post.likes = post.likes.filter(
+    (like) => like.toString() !== UserId.toString()
+  );
+  await post.save();
+  res.status(200).json({ message: "Post disliked successfully" });
+});
